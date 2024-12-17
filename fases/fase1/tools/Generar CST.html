@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de CST</title>
+</head>
+<body>
+    <h1>Generador de CST - Sin Node.js</h1>
+    <button onclick="generarArchivos()">Generar Archivos</button>
+    <script>
+        // Simulación de Nodes.js
+        const nodes = {
+
+Gramatica:{
+    saltos: " ",
+    rules: "Node",
+    saltos: " ",
+},
+
+Produccion:{
+    id: "string",
+    alias: "string",
+    expresion: "Node",
+},
+
+Identificador:{
+    id: "string",
+},
+
+Opciones:{
+    concatenacion:[ "Node"],
+    saltos: " ",
+},
+
+Union:{
+    expresion1: "Node",
+    saltos: " ",
+    expresion2: "Node",
+    id: "string",
+},
+
+Expresion:{
+    etiqueta: "string",
+    varios: "string",
+    saltos: " ",
+    expresion: "Node",
+    saltos: " ",
+    conteo: "Node",
+},
+
+Etiqueta:{
+    saltos: " ",
+    id: "string",
+    saltos: " ",
+    varios: "Node",
+},
+
+Varios:{
+   id: "string",   
+},
+
+Expresiones:{
+    id: "string",
+    alias: "string",
+    saltos: " ",
+    Opciones: "Node",
+    Corchetes: "Node",
+},
+
+Conteo:{
+    saltos: " ",
+    Number: "string",
+    id: "string",
+    saltos: " ",
+    Opciones: "Node",
+},
+
+Corchetes:{
+    rango: "Node",
+    contenido: "Node",
+},
+
+Rango:{
+    String: "string",
+    String: "string",
+},
+
+String:{
+    value: "string",
+},
+
+Contenido:{
+    corchetes: "Node",
+    texto: "string",
+},
+
+Number:{
+    value: "string",
+},
+};
+
+        function generarArchivos() {
+            generarVisitor();
+            generarCST();
+            alert("¡Archivos generados y descargados!");
+        }
+
+        function generarVisitor() {
+            let visitorCode = "// Auto-generated Visitor.js\n";
+            visitorCode += "export default class Visitor {\n";
+            for (const node in nodes) {
+                visitorCode += `    visit${node}(node) {\n`;
+                visitorCode += `        throw new Error('visit${node} not implemented');\n`;
+                visitorCode += `    }\n`;
+            }
+            visitorCode += "}";
+            descargarArchivo(visitorCode, "Visitor.js");
+        }
+
+        function generarCST() {
+            let cstCode = "// Auto-generated CST.js\nimport Visitor from './Visitor.js';\n";
+            for (const [name, args] of Object.entries(nodes)) {
+                cstCode += `\nexport class ${name} {\n`;
+                cstCode += `    constructor(${Object.keys(args).join(", ")}) {\n`;
+                for (const arg of Object.keys(args)) {
+                    cstCode += `        this.${arg} = ${arg};\n`;
+                }
+                cstCode += "    }\n\n";
+                cstCode += `    accept(visitor) {\n`;
+                cstCode += `        if (visitor instanceof Visitor) {\n`;
+                cstCode += `            return visitor.visit${name}(this);\n`;
+                cstCode += `        }\n`;
+                cstCode += `        throw new Error('Visitor not implemented correctly');\n`;
+                cstCode += "    }\n";
+                cstCode += "}";
+            }
+            descargarArchivo(cstCode, "CST.js");
+        }
+
+        function descargarArchivo(contenido, nombreArchivo) {
+            const blob = new Blob([contenido], { type: "text/javascript" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = nombreArchivo;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+    </script>
+</body>
+</html>
