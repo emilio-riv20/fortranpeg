@@ -7,6 +7,7 @@
     import { ids, usos} from '../index.js'
     import { ErrorReglas } from './error.js';
     import { errores } from '../index.js'
+    import * as n from '../src/CST.js';
 }}
 
 gramatica = _ producciones+ _ {
