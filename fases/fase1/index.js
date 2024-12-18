@@ -1,13 +1,9 @@
 import * as monaco from 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/+esm';
 import { parse } from './parser/gramatica.js';
 import { ErrorReglas } from './parser/error.js';
-
-
 export let ids = []
 export let usos = []
 export let errores = []
-
-
 // Crear el editor principal
 const editor = monaco.editor.create(
     document.getElementById('editor'), {
@@ -17,57 +13,70 @@ const editor = monaco.editor.create(
         automaticLayout: true
     }
 );
-
 // Crear el editor para la salida
 const salida = monaco.editor.create(
     document.getElementById('salida'), {
+        value: '',
+        language: 'java',
+        readOnly: false,
+        automaticLayout: true
+    }
+);
+const errors = monaco.editor.create(
+    document.getElementById('errors'), {
         value: '',
         language: 'java',
         readOnly: true,
         automaticLayout: true
     }
 );
-
 let decorations = [];
-
 // Analizar contenido del editor
 const analizar = () => {
     const entrada = editor.getValue();
+    if (entrada.length === 0) {
+        errores.length = 0; // Limpia la lista de errores
+        ids.length = 0;     // Limpia otros arreglos si es necesario
+        usos.length = 0;
+    
+        // Limpia el editor de errores y de salida
+        errors.setValue(""); 
+        salida.setValue("");
+    
+        // Limpia decoraciones previas (resaltado de errores)
+        decorations = editor.deltaDecorations(decorations, []);
+        return; // Salir de la función 'analizar'
+    }
     ids.length = 0
     usos.length = 0
     errores.length = 0
     try {
         const cst = parse(entrada)
-
         if(errores.length > 0){
-            salida.setValue(
+            errors.setValue(
                 `Error: ${errores[0].message}`
             );
+            salida.setValue("");
             return
-        }else{
+        } else{
+            errors.setValue("");
             salida.setValue("Análisis Exitoso");
         }
-
         // salida.setValue("Análisis Exitoso");
         // Limpiar decoraciones previas si la validación es exitosa
         decorations = editor.deltaDecorations(decorations, []);
     } catch (e) {
-
         if(e.location === undefined){
             
-            salida.setValue(
+            errors.setValue(
                 `Error: ${e.message}`
             );
-
         }else {
-
         
-
             // Mostrar mensaje de error en el editor de salida
-            salida.setValue(
+            errors.setValue(
                 `Error: ${e.message}\nEn línea ${e.location.start.line} columna ${e.location.start.column}`
             );
-
             // Resaltar el error en el editor de entrada
             decorations = editor.deltaDecorations(decorations, [
                 {
@@ -97,12 +106,10 @@ const analizar = () => {
         
     }
 };
-
 // Escuchar cambios en el contenido del editor
 editor.onDidChangeModelContent(() => {
     analizar();
 });
-
 // CSS personalizado para resaltar el error y agregar un warning
 const style = document.createElement('style');
 style.innerHTML = `

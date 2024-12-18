@@ -11,92 +11,86 @@
         // Simulación de Nodes.js
         const nodes = {
 
-Gramatica:{
-    saltos: " ",
-    rules: "Node",
-    saltos: " ",
-},
-
 Produccion:{
     id: "string",
+    alias: "?string",
+    expresion: "Opciones",
+},
+
+Opciones:{
+    concatenacion:"Union[]",
+},
+
+Union:{
+    expresion: "Expresion[]",
+},
+
+Expresion:{
+    label: "?Etiqueta",
+    varios: "?Varios",
+    expresiones: "Expresiones[]",
+    cierres: "?Cierres",
+    conteo: "?Conteo",
+},
+
+Etiqueta:{
+    arroba: "?string",
+    id: "string",
+    varios: "?Varios",
+},
+
+Varios:{
+   value: "string",   
+},
+
+Expresiones:{
+    id: "Identificador",
     alias: "string",
-    expresion: "Node",
+    i: "?i",
+    opciones: "Opciones[]",
+    corchetes: "Corchetes",
+},
+
+Cierres:{
+    value: "string",
+},
+
+Conteo:{
+    number: "Number",
+    id: "Identificador",
+    opciones: "Opciones[]",
+},
+
+Corchetes:{
+    rango: "Caracter",
+    contenido: "Contenido",
+},
+
+Caracter:{
+    value: "string",
+},
+
+Contenido:{
+    corchetes: "Corchete",
+    texto: "Texto",
+},
+
+Corchete:{
+    value: "Contenido",
+},
+
+Texto:{
+    value: "string",
 },
 
 Identificador:{
     id: "string",
 },
 
-Opciones:{
-    concatenacion:[ "Node"],
-    saltos: " ",
-},
-
-Union:{
-    expresion1: "Node",
-    saltos: " ",
-    expresion2: "Node",
-    id: "string",
-},
-
-Expresion:{
-    etiqueta: "string",
-    varios: "string",
-    saltos: " ",
-    expresion: "Node",
-    saltos: " ",
-    conteo: "Node",
-},
-
-Etiqueta:{
-    saltos: " ",
-    id: "string",
-    saltos: " ",
-    varios: "Node",
-},
-
-Varios:{
-   id: "string",   
-},
-
-Expresiones:{
-    id: "string",
-    alias: "string",
-    saltos: " ",
-    Opciones: "Node",
-    Corchetes: "Node",
-},
-
-Conteo:{
-    saltos: " ",
-    Number: "string",
-    id: "string",
-    saltos: " ",
-    Opciones: "Node",
-},
-
-Corchetes:{
-    rango: "Node",
-    contenido: "Node",
-},
-
-Rango:{
-    String: "string",
-    String: "string",
-},
-
-String:{
-    value: "string",
-},
-
-Contenido:{
-    corchetes: "Node",
-    texto: "string",
-},
-
 Number:{
     value: "string",
 },
+
 };
 
         function generarArchivos() {

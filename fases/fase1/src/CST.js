@@ -1,19 +1,6 @@
 // Auto-generated CST.js
 import Visitor from './Visitor.js';
 
-export class Gramatica {
-    constructor(saltos, rules) {
-        this.saltos = saltos;
-        this.rules = rules;
-    }
-
-    accept(visitor) {
-        if (visitor instanceof Visitor) {
-            return visitor.visitGramatica(this);
-        }
-        throw new Error('Visitor not implemented correctly');
-    }
-}
 export class Produccion {
     constructor(id, alias, expresion) {
         this.id = id;
@@ -28,22 +15,9 @@ export class Produccion {
         throw new Error('Visitor not implemented correctly');
     }
 }
-export class Identificador {
-    constructor(id) {
-        this.id = id;
-    }
-
-    accept(visitor) {
-        if (visitor instanceof Visitor) {
-            return visitor.visitIdentificador(this);
-        }
-        throw new Error('Visitor not implemented correctly');
-    }
-}
 export class Opciones {
-    constructor(concatenacion, saltos) {
+    constructor(concatenacion) {
         this.concatenacion = concatenacion;
-        this.saltos = saltos;
     }
 
     accept(visitor) {
@@ -54,11 +28,8 @@ export class Opciones {
     }
 }
 export class Union {
-    constructor(expresion1, saltos, expresion2, id) {
-        this.expresion1 = expresion1;
-        this.saltos = saltos;
-        this.expresion2 = expresion2;
-        this.id = id;
+    constructor(expresion) {
+        this.expresion = expresion;
     }
 
     accept(visitor) {
@@ -69,11 +40,11 @@ export class Union {
     }
 }
 export class Expresion {
-    constructor(etiqueta, varios, saltos, expresion, conteo) {
-        this.etiqueta = etiqueta;
+    constructor(label, varios, expresiones, cierres, conteo) {
+        this.label = label;
         this.varios = varios;
-        this.saltos = saltos;
-        this.expresion = expresion;
+        this.expresiones = expresiones;
+        this.cierres = cierres;
         this.conteo = conteo;
     }
 
@@ -85,8 +56,8 @@ export class Expresion {
     }
 }
 export class Etiqueta {
-    constructor(saltos, id, varios) {
-        this.saltos = saltos;
+    constructor(arroba, id, varios) {
+        this.arroba = arroba;
         this.id = id;
         this.varios = varios;
     }
@@ -99,8 +70,8 @@ export class Etiqueta {
     }
 }
 export class Varios {
-    constructor(id) {
-        this.id = id;
+    constructor(value) {
+        this.value = value;
     }
 
     accept(visitor) {
@@ -111,12 +82,12 @@ export class Varios {
     }
 }
 export class Expresiones {
-    constructor(id, alias, saltos, Opciones, Corchetes) {
+    constructor(id, alias, i, opciones, corchetes) {
         this.id = id;
         this.alias = alias;
-        this.saltos = saltos;
-        this.Opciones = Opciones;
-        this.Corchetes = Corchetes;
+        this.i = i;
+        this.opciones = opciones;
+        this.corchetes = corchetes;
     }
 
     accept(visitor) {
@@ -126,12 +97,23 @@ export class Expresiones {
         throw new Error('Visitor not implemented correctly');
     }
 }
+export class Cierres {
+    constructor(value) {
+        this.value = value;
+    }
+
+    accept(visitor) {
+        if (visitor instanceof Visitor) {
+            return visitor.visitCierres(this);
+        }
+        throw new Error('Visitor not implemented correctly');
+    }
+}
 export class Conteo {
-    constructor(saltos, Number, id, Opciones) {
-        this.saltos = saltos;
-        this.Number = Number;
+    constructor(number, id, opciones) {
+        this.number = number;
         this.id = id;
-        this.Opciones = Opciones;
+        this.opciones = opciones;
     }
 
     accept(visitor) {
@@ -154,26 +136,14 @@ export class Corchetes {
         throw new Error('Visitor not implemented correctly');
     }
 }
-export class Rango {
-    constructor(String) {
-        this.String = String;
-    }
-
-    accept(visitor) {
-        if (visitor instanceof Visitor) {
-            return visitor.visitRango(this);
-        }
-        throw new Error('Visitor not implemented correctly');
-    }
-}
-export class String {
+export class Caracter {
     constructor(value) {
         this.value = value;
     }
 
     accept(visitor) {
         if (visitor instanceof Visitor) {
-            return visitor.visitString(this);
+            return visitor.visitCaracter(this);
         }
         throw new Error('Visitor not implemented correctly');
     }
@@ -187,6 +157,42 @@ export class Contenido {
     accept(visitor) {
         if (visitor instanceof Visitor) {
             return visitor.visitContenido(this);
+        }
+        throw new Error('Visitor not implemented correctly');
+    }
+}
+export class Corchete {
+    constructor(value) {
+        this.value = value;
+    }
+
+    accept(visitor) {
+        if (visitor instanceof Visitor) {
+            return visitor.visitCorchete(this);
+        }
+        throw new Error('Visitor not implemented correctly');
+    }
+}
+export class Texto {
+    constructor(value) {
+        this.value = value;
+    }
+
+    accept(visitor) {
+        if (visitor instanceof Visitor) {
+            return visitor.visitTexto(this);
+        }
+        throw new Error('Visitor not implemented correctly');
+    }
+}
+export class Identificador {
+    constructor(id) {
+        this.id = id;
+    }
+
+    accept(visitor) {
+        if (visitor instanceof Visitor) {
+            return visitor.visitIdentificador(this);
         }
         throw new Error('Visitor not implemented correctly');
     }
