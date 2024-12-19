@@ -73,7 +73,7 @@ conteo = "|" _ (numero / id:identificador) _ "|"
 // Regla principal que analiza corchetes con contenido
 corchetes
     = "[" contenido:(rango / contenido)+ "]" {
-        return `Entrada válida: [${input}]`;
+        return new n.Rangos(contenido);
     }
 
 // Regla para validar un rango como [A-Z]
@@ -83,7 +83,7 @@ rango
             throw new Error(`Rango inválido: [${inicio}-${fin}]`);
 
         }
-        return `${inicio}-${fin}`;
+        return new n.Rango(inicio,fin);
     }
 
 // Regla para caracteres individuales
@@ -92,13 +92,16 @@ caracter
 
 // Coincide con cualquier contenido que no incluya "]"
 contenido
-    = (corchete / texto)+
+    = cont:(corchete / texto)+ 
+    {
+        return new n.Contenido(cont);
+    }
 
 corchete
-    = "[" contenido "]"
+    = "[" content:contenido "]" {return new n.Corchete(content);; }
 
 texto
-    = [^\[\]]+
+    = [^\[\]]+ { return text();}
 
 literales = '"' @stringDobleComilla* '"'
             / "'" @stringSimpleComilla* "'"
