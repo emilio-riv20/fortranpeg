@@ -7,10 +7,10 @@
     import { ids, usos} from '../index.js'
     import { ErrorReglas } from './error.js';
     import { errores } from '../index.js'
-    import * as n from '../src/CST.js';
+    import * as n from '../visitor/CST.js';
 }}
 
-gramatica = _ producciones+ _ {
+gramatica = _ prods:producciones+ _ {
 
     let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
@@ -22,24 +22,38 @@ gramatica = _ producciones+ _ {
     if (noEncontrados.length > 0) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
     }
+    return prods;
 }
 
-producciones = _ id:identificador _ (literales)? _ "=" _ opciones (_";")? { ids.push(id) }
+producciones = _ id:identificador _ alias:(literales)? _ "=" _ expr:opciones (_";")? {
+    id.push(id);
+    return new n.Produccion(id, expr, alias);
+}
+//El @ se centrará en la producción
+opciones = expr:union rest:(_ "/" _ @union)*{
+    return new n.Opciones([expr, ...rest]);
+}
 
-opciones = union (_ "/" _ union)*
-
-union = expresion (_ expresion !(_ literales? _ "=") )*
-
-expresion  = (etiqueta/varios)? _ expresiones _ ([?+*]/conteo)?
+union = expr:expresion rest:(_ @expresion !(_ literales? _ "=") )*{
+    return new n.Union([expr, ...rest]);
+}
+//El $ se centrará en la expresión completa
+expresion  = label:$(etiqueta/varios)? _ expr:expresiones _ qty:$([?+*]/conteo)?{
+    return new n.Expresion(expr, label, qty);
+}
 
 etiqueta = ("@")? _ id:identificador _ ":" (varios)?
 
 varios = ("!"/"$"/"@"/"&")
 
 expresiones  =  id:identificador { usos.push(id) }
-                / literales "i"?
+                / val:$literales isCase:"i"? {
+                    return new n.String(val, isCase);
+                }
                 / "(" _ opciones _ ")"
-                / corchetes "i"?
+                / cor:corchetes isCase:"i"?{
+                    return new n.Corchetes(cor, isCase);
+                }
                 / "."
                 / "!."
 
@@ -86,8 +100,8 @@ corchete
 texto
     = [^\[\]]+
 
-literales = '"' stringDobleComilla* '"'
-            / "'" stringSimpleComilla* "'"
+literales = '"' @stringDobleComilla* '"'
+            / "'" @stringSimpleComilla* "'"
 
 stringDobleComilla = !('"' / "\\" / finLinea) .
                     / "\\" escape

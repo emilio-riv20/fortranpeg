@@ -1,50 +1,40 @@
-// Generar clases para CST
-// Este archivo genera las clases necesarias para implementar el patrón visitante con JavaScript
+// Generar clases para AST
+// Este archivo genera las clases necesarias para implementar el patrón visitante con Typescript
 
-//import path from 'node:path';
+import { writeFileSync } from 'node:fs';
+import path from 'node:path';
 import nodes from './Nodes.js';
 
 const __dirname = import.meta.dirname;
-const classesDestination = '../src/lib/CST.js';
-const visitorDestination = '../src/lib/Visitor.js';
+const classesDestination = '../src/visitor/CST.js';
+const visitorDestination = '../src/visitor/Visitor.js';
 
-// Generar el archivo del Visitor
 let codeString = `
 // Auto-generated
-export default class Visitor {
+export default class visitor {
 `;
-
 for (const node of Object.keys(nodes)) {
-    codeString += `\tvisit${node}(node) {\n\t\tthrow new Error('visit${node} not implemented');\n\t}\n`;
+    codeString += `\tvisit${node}(node) {}\n`;
 }
-
 codeString += `}`;
 
 writeFileSync(path.join(__dirname, visitorDestination), codeString);
-console.log('Generated Visitor class');
+console.log('Generated visitor Interface');
 
-// Generar el archivo de las clases del CST
 codeString = `
 // Auto-generated
-import Visitor from './Visitor.js';
-
+import Node from './Node.js';
 `;
-
 for (const [name, args] of Object.entries(nodes)) {
-    const argKeys = Object.keys(args);
-
-    // Declarar la clase
     codeString += `
-export class ${name} {
-    constructor(${argKeys.join(', ')}) {
-        ${argKeys.map((arg) => `this.${arg} = ${arg};`).join('\n\t\t')}
+export class ${name} extends Node {
+    constructor(${args.join(', ')}) {
+        super();
+        ${args.map((arg) => `this.${arg} = ${arg};`).join('\n\t\t')}
     }
 
     accept(visitor) {
-        if (visitor instanceof Visitor) {
-            return visitor.visit${name}(this);
-        }
-        throw new Error("Visitor not implemented correctly");
+        return visitor.visit${name}(this);
     }
 }
     `;
