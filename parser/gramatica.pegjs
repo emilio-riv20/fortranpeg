@@ -26,8 +26,8 @@ gramatica = _ prods:producciones+ _ {
 }
 
 producciones = _ id:identificador _ alias:(literales)? _ "=" _ expr:opciones (_";")? {
-    id.push(id);
-    return new n.Produccion(id, expr, alias);
+    ids.push(id);
+    return new n.Producciones(id, expr, alias);
 }
 //El @ se centrará en la producción
 opciones = expr:union rest:(_ "/" _ @union)*{

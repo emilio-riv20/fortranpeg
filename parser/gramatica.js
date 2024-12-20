@@ -277,8 +277,8 @@ function peg$parse(input, options) {
     return prods;
 };
   var peg$f1 = function(id, alias, expr) {
-    id.push(id);
-    return new n.Produccion(id, expr, alias);
+    ids.push(id);
+    return new n.Producciones(id, expr, alias);
 };
   var peg$f2 = function(expr, rest) {
     return new n.Opciones([expr, ...rest]);
