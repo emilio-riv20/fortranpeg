@@ -48,10 +48,10 @@ varios = ("!"/"$"/"@"/"&")
 
 expresiones  =  id:identificador { usos.push(id) }
                 / val:$literales isCase:"i"? {
-                    return new n.String(val, isCase);
+                    return new n.String(val.replace(/['"]/g, ''), isCase);
                 }
                 / "(" _ opciones _ ")"
-                / cor:corchetes isCase:"i"?{
+                / cor:corchetes isCase:"i"?{ //cors = chars
                     return new n.Corchetes(cor, isCase);
                 }
                 / "."
@@ -72,11 +72,16 @@ conteo = "|" _ (numero / id:identificador) _ "|"
 
 // Regla principal que analiza corchetes con contenido
 corchetes
-    = "[" contenido:(rango / contenido)+ "]" {
-        return new n.Rangos(contenido);
-    }
+    = "[" @contenidoCorchetes+ "]" //corchetes = clase
+
+
+contenidoCorchetes
+  = bottom:$[^\[\]] "-" top:$[^\[\]] {
+    return new n.Rango(bottom, top);
+  }
 
 // Regla para validar un rango como [A-Z]
+/*
 rango
     = inicio:caracter "-" fin:caracter {
         if (inicio.charCodeAt(0) > fin.charCodeAt(0)) {
@@ -102,6 +107,7 @@ corchete
 
 texto
     = [^\[\]]+ { return text();}
+    */
 
 literales = '"' @stringDobleComilla* '"'
             / "'" @stringSimpleComilla* "'"
