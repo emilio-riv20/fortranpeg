@@ -25,8 +25,12 @@ gramatica = _ prods:producciones+ _ {
     return prods;
 }
 
+<<<<<<< HEAD
 producciones = _ id:identificador _ alias:(literales)? _ "=" _ expr:opciones (_";")? 
 {
+=======
+producciones = _ id:identificador _ alias:(literales)? _ "=" _ expr:opciones (_";")? {
+>>>>>>> 84bdb3d405b83d55246c1bbe153b898d797537bb
     ids.push(id);
     return new n.Producciones(id, expr, alias);
 }
