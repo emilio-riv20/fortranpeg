@@ -7,4 +7,5 @@ export default class visitor {
 	visitExpresion(node) {}
 	visitString(node) {}
 	visitCorchetes(node) {}
+	visitRango(node) {}
 }

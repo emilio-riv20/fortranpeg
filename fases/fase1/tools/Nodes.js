@@ -5,6 +5,7 @@ const nodes = {
     Expresion:['expr', 'label', 'qty'],
     String:['val', 'isCase'],
     Corchetes:['cor', 'isCase'],
+    Rango:['bottom', 'top'],
 };
 
 export default nodes;

@@ -74,3 +74,15 @@ export class Corchetes extends Node {
     }
 }
     
+export class Rango extends Node {
+    constructor(bottom, top) {
+        super();
+        this.bottom = bottom;
+		this.top = top;
+    }
+
+    accept(visitor) {
+        return visitor.visitRango(this);
+    }
+}
+    
