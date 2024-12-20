@@ -74,6 +74,7 @@ contenidoCorchetes
   = bottom:$[^\[\]] "-" top:$[^\[\]] {
     return new n.Rango(bottom, top);
   }
+  / $[^\[\]]
 
 literales = '"' @stringDobleComilla* '"'
           / "'" @stringSimpleComilla* "'"

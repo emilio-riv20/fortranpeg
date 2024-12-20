@@ -31,7 +31,6 @@ end module tokenizer
     }
 
     visitProducciones(node) {
-        console.log(` exp -> ${node.expr}`)
         return node.expr.accept(this);
     }
 
