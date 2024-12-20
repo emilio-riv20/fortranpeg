@@ -25,9 +25,10 @@ gramatica = _ prods:producciones+ _ {
     return prods;
 }
 
-producciones = _ id:identificador _ alias:(literales)? _ "=" _ expr:opciones (_";")? {
-    id.push(id);
-    return new n.Produccion(id, expr, alias);
+producciones = _ id:identificador _ alias:(literales)? _ "=" _ expr:opciones (_";")? 
+{
+    ids.push(id);
+    return new n.Producciones(id, expr, alias);
 }
 //El @ se centrará en la producción
 opciones = expr:union rest:(_ "/" _ @union)*{
@@ -47,7 +48,7 @@ etiqueta = ("@")? _ id:identificador _ ":" (varios)?
 varios = ("!"/"$"/"@"/"&")
 
 expresiones  =  id:identificador { usos.push(id) }
-                / val:$literales isCase:"i"? {
+                / val:$literales isCase:"i"?{
                     return new n.String(val.replace(/['"]/g, ''), isCase);
                 }
                 / "(" _ opciones _ ")"
@@ -64,53 +65,18 @@ conteo = "|" _ (numero / id:identificador) _ "|"
         / "|" _ (numero / id:identificador)? _ "," _ opciones _ "|"
         / "|" _ (numero / id:identificador)? _ ".." _ (numero / id2:identificador)? _ "," _ opciones _ "|"
 
-// parteconteo = identificador
-//             / [0-9]? _ ".." _ [0-9]?
-// 			/ [0-9]
-
-// delimitador =  "," _ expresion
-
 // Regla principal que analiza corchetes con contenido
 corchetes
     = "[" @contenidoCorchetes+ "]" //corchetes = clase
-
+      
 
 contenidoCorchetes
   = bottom:$[^\[\]] "-" top:$[^\[\]] {
     return new n.Rango(bottom, top);
   }
 
-// Regla para validar un rango como [A-Z]
-/*
-rango
-    = inicio:caracter "-" fin:caracter {
-        if (inicio.charCodeAt(0) > fin.charCodeAt(0)) {
-            throw new Error(`Rango inválido: [${inicio}-${fin}]`);
-
-        }
-        return new n.Rango(inicio,fin);
-    }
-
-// Regla para caracteres individuales
-caracter
-    = [a-zA-Z0-9_ ] { return text()}
-
-// Coincide con cualquier contenido que no incluya "]"
-contenido
-    = cont:(corchete / texto)+ 
-    {
-        return new n.Contenido(cont);
-    }
-
-corchete
-    = "[" content:contenido "]" {return new n.Corchete(content);; }
-
-texto
-    = [^\[\]]+ { return text();}
-    */
-
 literales = '"' @stringDobleComilla* '"'
-            / "'" @stringSimpleComilla* "'"
+          / "'" @stringSimpleComilla* "'"
 
 stringDobleComilla = !('"' / "\\" / finLinea) .
                     / "\\" escape
@@ -136,11 +102,6 @@ escape = "'"
         / "u"
 
 secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
-
-// literales = 
-//     "\"" [^"]* "\""
-//     / "'" [^']* "'"
-    
 
 numero = [0-9]+
 

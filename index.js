@@ -1,6 +1,6 @@
 import * as monaco from 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/+esm';
 import { parse } from './parser/gramatica.js';
-import { ErrorReglas } from './parser/error.js';
+import Tokenizer from './visitor/Tokenizer.js';
 export let ids = []
 export let usos = []
 export let errores = []
@@ -62,17 +62,19 @@ const analizar = () => {
             errors.setValue("");
             salida.setValue("Análisis Exitoso");
         }
-        // salida.setValue("Análisis Exitoso");
-        // Limpiar decoraciones previas si la validación es exitosa
+
         decorations = editor.deltaDecorations(decorations, []);
+        const tokenizer = new Tokenizer();
+        const toks = tokenizer.generateTokenizer(cst)
+        console.log(toks)
+        
     } catch (e) {
         if(e.location === undefined){
             
             errors.setValue(
-                `Error: ${e.message}`
+             `Error: ${e}\nDetalles: ${e.stack || 'No hay información adicional.'}`
             );
         }else {
-        
             // Mostrar mensaje de error en el editor de salida
             errors.setValue(
                 `Error: ${e.message}\nEn línea ${e.location.start.line} columna ${e.location.start.column}`
