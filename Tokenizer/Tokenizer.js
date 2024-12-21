@@ -61,18 +61,50 @@ end module tokenizer
     `;
     }
 
+    
     generateCaracteres(chars) {
         if (chars.length === 0) return '';
-        return `
-    if (findloc([${chars
-        .map((char) => `"${char}"`)
-        .join(', ')}], input(i:i), 1) > 0) then
-        lexeme = input(cursor:i)
-        cursor = i + 1
-        return
-    end if
-        `;
+    
+        const specialChars = ['\t', '\n', '\r', '\f', '\v'];
+        let result = '';
+
+        specialChars.forEach((char) => {
+            if (chars.includes(char)) {
+                const representation = (() => {
+                    switch (char) {
+                        case '\t': return '\\t';
+                        case '\n': return '\\n';
+                        case '\r': return '\\r';
+                        case '\f': return '\\f';
+                        case '\v': return '\\v';
+                    }
+                })();
+    
+                result += `
+        if ("${representation}" == input(i:i)) then
+            lexeme = input(cursor:i)
+            cursor = i + 1
+            return
+        end if
+                `;
+            }
+        });
+    
+        const normalChars = chars.filter((char) => !specialChars.includes(char));
+        if (normalChars.length > 0) {
+            result += `
+        if (findloc([${normalChars.map((char) => `"${char}"`).join(', ')}], input(i:i), 1) > 0) then
+            lexeme = input(cursor:i)
+            cursor = i + 1
+            return
+        end if
+            `;
+        }
+    
+        return result;
     }
+    
+
 
     visitCorchetes(node) {
         return `
