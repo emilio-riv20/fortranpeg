@@ -296,16 +296,14 @@ function peg$parse(input, options) {
   var peg$f6 = function(val, isCase) {
                     return new n.String(val.replace(/['"]/g, ''), isCase);
                 };
-  var peg$f7 = function(op) {return new n.Opciones(op) };
+  var peg$f7 = function(op) {return op };
   var peg$f8 = function(cor, isCase) { //cors = chars
                     return new n.Corchetes(cor, isCase);
                 };
   var peg$f9 = function(bottom, top) {
     return new n.Rango(bottom, top);
   };
-  var peg$f10 = function(id) { 
-    console.log('id', text());
-    return text(); };
+  var peg$f10 = function(id) { return text(); };
   var peg$currPos = options.peg$currPos | 0;
   var peg$savedPos = peg$currPos;
   var peg$posDetailsCache = [{ line: 1, column: 1 }];

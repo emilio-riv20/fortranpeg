@@ -54,7 +54,7 @@ expresiones  =  id:identificador {
                 / val:$literales isCase:"i"?{
                     return new n.String(val.replace(/['"]/g, ''), isCase);
                 }
-                / "(" _ op:opciones _ ")" {return new n.Opciones(op) }
+                / "(" _ op:opciones _ ")" {return op }
                 / cor:corchetes isCase:"i"?{ //cors = chars
                     return new n.Corchetes(cor, isCase);
                 }

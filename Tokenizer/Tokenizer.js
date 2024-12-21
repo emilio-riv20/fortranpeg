@@ -65,10 +65,11 @@ end module tokenizer
     generateCaracteres(chars) {
         if (chars.length === 0) return '';
     
-        const specialChars = ['\t', '\n', '\r', '\f', '\v'];
+        const specialChars = ['\\t', '\\n', '\\r', '\\f', '\\v'];
         let result = '';
 
         specialChars.forEach((char) => {
+            console.log("el char: ",chars)
             if (chars.includes(char)) {
                 const representation = (() => {
                     switch (char) {
@@ -107,6 +108,7 @@ end module tokenizer
 
 
     visitCorchetes(node) {
+        console.log("asdasd",node)
         return `
     i = cursor
     ${this.generateCaracteres(node.cor.filter((node) => typeof node === 'string'))}
