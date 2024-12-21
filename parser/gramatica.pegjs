@@ -54,7 +54,7 @@ expresiones  =  id:identificador {
                 / val:$literales isCase:"i"?{
                     return new n.String(val.replace(/['"]/g, ''), isCase);
                 }
-                / "(" _ op:opciones _ ")" {return op; }
+                / "(" _ op:opciones _ ")" {return new n.Opciones(op) }
                 / cor:corchetes isCase:"i"?{ //cors = chars
                     return new n.Corchetes(cor, isCase);
                 }
@@ -109,7 +109,7 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = id:$[_a-z]i[_a-z0-9]i* { return id; }
+identificador = id:([_a-z]i[_a-z0-9]i*) { return text(); }
 
 _ = (Comentarios /[ \t\n\r])*
 
