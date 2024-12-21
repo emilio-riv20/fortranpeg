@@ -66,23 +66,29 @@ end module tokenizer
         if (chars.length === 0) return '';
     
         const specialChars = ['\\t', '\\n', '\\r', '\\f', '\\v'];
-        let result = '';
 
-        specialChars.forEach((char) => {
-            console.log("el char: ",chars)
-            if (chars.includes(char)) {
-                const representation = (() => {
-                    switch (char) {
-                        case '\t': return '\\t';
-                        case '\n': return '\\n';
-                        case '\r': return '\\r';
-                        case '\f': return '\\f';
-                        case '\v': return '\\v';
-                    }
-                })();
+        const processedChars = [];
+        let i = 0;
+        while (i < chars.length) {
+            // Revisa si el actual y el siguiente forman un carácter especial
+            if (chars[i] === '\\' && i + 1 < chars.length) {
+                const potentialSpecial = chars[i] + chars[i + 1];
+                if (specialChars.includes(potentialSpecial)) {
+                    processedChars.push(potentialSpecial); // junta los caracteres
+                    i += 2;
+                    continue;
+                }
+            }
+            processedChars.push(chars[i]);
+            i++;
+        }
     
+        let result = '';
+    
+        specialChars.forEach((char) => {
+            if (processedChars.includes(char)) {
                 result += `
-        if ("${representation}" == input(i:i)) then
+        if ("${char}" == input(i:i)) then
             lexeme = input(cursor:i)
             cursor = i + 1
             return
@@ -91,7 +97,7 @@ end module tokenizer
             }
         });
     
-        const normalChars = chars.filter((char) => !specialChars.includes(char));
+        const normalChars = processedChars.filter((char) => !specialChars.includes(char));
         if (normalChars.length > 0) {
             result += `
         if (findloc([${normalChars.map((char) => `"${char}"`).join(', ')}], input(i:i), 1) > 0) then
@@ -104,6 +110,7 @@ end module tokenizer
     
         return result;
     }
+    
     
 
 
