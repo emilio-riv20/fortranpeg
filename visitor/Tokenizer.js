@@ -39,6 +39,10 @@ end module tokenizer
     }
 
     visitUnion(node) {
+        node.expr.forEach(element => {
+            console.log(element)
+        });
+        // return `if `
         return node.expr.map((node) => node.accept(this)).join('\n');
     }
 
