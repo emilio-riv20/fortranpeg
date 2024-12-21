@@ -47,11 +47,14 @@ etiqueta = ("@")? _ id:identificador _ ":" (varios)?
 
 varios = ("!"/"$"/"@"/"&")
 
-expresiones  =  id:identificador { usos.push(id) }
+expresiones  =  id:identificador { 
+    usos.push(id)
+    return new n.Identificador(id);
+ }
                 / val:$literales isCase:"i"?{
                     return new n.String(val.replace(/['"]/g, ''), isCase);
                 }
-                / "(" _ opciones _ ")"
+                / "(" _ op:opciones _ ")" {return op; }
                 / cor:corchetes isCase:"i"?{ //cors = chars
                     return new n.Corchetes(cor, isCase);
                 }
@@ -106,8 +109,7 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = [_a-z]i[_a-z0-9]i* { return text() }
-
+identificador = id:$[_a-z]i[_a-z0-9]i* { return id; }
 
 _ = (Comentarios /[ \t\n\r])*
 

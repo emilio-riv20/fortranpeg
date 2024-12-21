@@ -8,4 +8,5 @@ export default class visitor {
 	visitString(node) {}
 	visitCorchetes(node) {}
 	visitRango(node) {}
+	visitIdentificador(node) {}
 }

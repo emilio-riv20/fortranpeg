@@ -85,6 +85,15 @@ export class Rango extends Node {
         return visitor.visitRango(this);
     }
 }
+    
+export class Identificador extends Node {
+    constructor(id) {
+        super();
+        this.id = id;
+    }
 
-
+    accept(visitor) {
+        return visitor.visitIdentificador(this);
+    }
+}
     

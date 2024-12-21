@@ -6,6 +6,7 @@ const nodes = {
     String:['val', 'isCase'],
     Corchetes:['cor', 'isCase'],
     Rango:['bottom', 'top'],
+    Identificador:['id'],
 };
 
 export default nodes;
