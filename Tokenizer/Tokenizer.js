@@ -1,5 +1,5 @@
 import Visitor from '../visitor/Visitor.js';
-import { Rango } from '../visitor/CST.js';
+import { Expresion, Rango } from '../visitor/CST.js';
 
 export default class Tokenizer extends Visitor {
     generateTokenizer(grammar) {
@@ -31,7 +31,7 @@ end module tokenizer
     }
 
     visitProducciones(node) {
-        return node.expr.accept(this);
+       return node.expr.accept(this);
     }
 
     visitOpciones(node) {
@@ -39,15 +39,54 @@ end module tokenizer
     }
 
     visitUnion(node) {
-        node.expr.forEach(element => {
-            console.log(element)
-        });
         // return `if `
         return node.expr.map((node) => node.accept(this)).join('\n');
     }
 
     visitExpresion(node) {
-        return node.expr.accept(this);
+        let result = '';
+    
+        if (node.qty.length === 0) {
+            result += node.expr.accept(this);
+        } else {
+            let exprResult = this.addTabulationToLines(node.expr.accept(this));
+    
+            switch (node.qty) {
+                case '?':
+                    result += `
+    if (cursor <= len(input)) then
+    ${exprResult}
+    end if
+                    `;
+                    break;
+    
+                case '*':
+                    result += `
+    i = cursor
+    do while (cursor <= len(input))
+    ${exprResult}
+    cursor = cursor + 1
+    end do
+                    `;
+                    break;
+    
+                case '+':
+                    result += `
+    i = cursor
+    ${exprResult}
+    do while (cursor <= len(input))
+    ${exprResult}
+    cursor = cursor + 1
+    end do
+                    `;
+                    break;
+    
+                default:
+                    console.log("Error en la cantidad de repeticiones");
+            }
+        }
+    
+        return result;
     }
 
     visitString(node) {
@@ -110,12 +149,8 @@ end module tokenizer
     
         return result;
     }
-    
-    
-
 
     visitCorchetes(node) {
-        console.log("asdasd",node)
         return `
     i = cursor
     ${this.generateCaracteres(node.cor.filter((node) => typeof node === 'string'))}
@@ -138,5 +173,13 @@ end module tokenizer
 
     visitIdentificador(node) {
         return '';
+    }
+
+    // Función para agregar tabulación a cada línea
+    addTabulationToLines(code) {
+        return code
+            .split('\n')  // Separa el código en líneas
+            .map(line => `    ${line}`)  // Agrega 4 espacios (tabulación) al principio de cada línea
+            .join('\n');  // Vuelve a juntar las líneas con saltos de línea
     }
 }
