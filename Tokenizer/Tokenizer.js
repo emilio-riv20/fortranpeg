@@ -55,7 +55,11 @@ end module tokenizer
                 case '?':
                     result += `
     if (cursor <= len(input)) then
-    ${exprResult}
+    i = cursor
+    ${node.expr.accept(this)}
+    if(lexeme /= "ERROR") then
+        cursor = i
+    end if
     end if
                     `;
                     break;
@@ -104,17 +108,24 @@ end module tokenizer
     generateCaracteres(chars) {
         if (chars.length === 0) return '';
     
-        const specialChars = ['\\t', '\\n', '\\r', '\\f', '\\v'];
-
+        const specialChars = {
+            '\\t': 9,  // Tabulación
+            '\\n': 10, // Salto de línea
+            '\\r': 13, // Retorno de carro
+            '\\f': 12, // Avance de página
+            '\\v': 11  // Tabulación vertical
+        };
+    
         const processedChars = [];
         let i = 0;
+    
+        // Procesa caracteres normales y especiales
         while (i < chars.length) {
-            // Revisa si el actual y el siguiente forman un carácter especial
             if (chars[i] === '\\' && i + 1 < chars.length) {
                 const potentialSpecial = chars[i] + chars[i + 1];
-                if (specialChars.includes(potentialSpecial)) {
-                    processedChars.push(potentialSpecial); // junta los caracteres
-                    i += 2;
+                if (specialChars[potentialSpecial] !== undefined) {
+                    processedChars.push(potentialSpecial);
+                    i += 2; // Salta los dos caracteres
                     continue;
                 }
             }
@@ -124,26 +135,29 @@ end module tokenizer
     
         let result = '';
     
-        specialChars.forEach((char) => {
-            if (processedChars.includes(char)) {
+        // Genera las condiciones para caracteres especiales
+        processedChars.forEach((char) => {
+            if (specialChars[char] !== undefined) {
+                const asciiValue = specialChars[char];
                 result += `
-        if ("${char}" == input(i:i)) then
-            lexeme = input(cursor:i)
-            cursor = i + 1
-            return
-        end if
+    if (achar(${asciiValue}) == input(i:i)) then
+        lexeme = input(cursor:i)
+        cursor = i + 1
+        return
+    end if
                 `;
             }
         });
     
-        const normalChars = processedChars.filter((char) => !specialChars.includes(char));
+        // Genera condiciones para caracteres normales
+        const normalChars = processedChars.filter((char) => specialChars[char] === undefined);
         if (normalChars.length > 0) {
             result += `
-        if (findloc([${normalChars.map((char) => `"${char}"`).join(', ')}], input(i:i), 1) > 0) then
-            lexeme = input(cursor:i)
-            cursor = i + 1
-            return
-        end if
+    if (findloc([${normalChars.map((char) => `"${char}"`).join(', ')}], input(i:i), 1) > 0) then
+        lexeme = input(cursor:i)
+        cursor = i + 1
+        return
+    end if
             `;
         }
     
