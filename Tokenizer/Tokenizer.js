@@ -140,7 +140,7 @@ end module tokenizer
             if (specialChars[char] !== undefined) {
                 const asciiValue = specialChars[char];
                 result += `
-    if (achar(${asciiValue}) == input(i:i)) then
+    if (iachar(input(i:i)) == ${asciiValue}) then
         lexeme = input(cursor:i)
         cursor = i + 1
         return
