@@ -47,30 +47,7 @@ end module parser
     }
 
     visitOpciones(node) {
-        let e = ""
-        let ex = []
-        node.expr.map((node) => {
-            
-            if (node.expr.length > 1 ){
-                node.expr.map((n) => {
-                    if(n.expr.constructor.name == "String"){
-                        ex.push({val:n.expr.val,type:"string"})
-                    } else if(n.expr.constructor.name == "Corchetes"){
-                        ex.push({val:[n.expr.cor[0].bottom,n.expr.cor[0].top],type:"range"})
-                    }
-                })              
-                // e += CreateIf(ex.length,ex)
-            } else {  
-                node.expr.map((node)=>{
-                    e += node.accept(this)
-                    e += "\n"
-                })              
-            }
-
-        }).join("\n")
-        e+=CreateIf(ex.length,ex)
-        console.log(`${e}`)
-        return e
+        return node.expr.map((node) => node.accept(this)).join('\n');
     }
 
 
