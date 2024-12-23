@@ -235,7 +235,6 @@ function CreateIf(niv,arr,act=1){
     }
     const cuerpoRecursivo = CreateIf(niv,arr,act + 1);
     const cierre = `${indentacion}end if\n`;
-
-    // arr.forEach((e)=>{console.log(e)})
     return bloque + cuerpoRecursivo + cierre;
+    // prueba
 }
