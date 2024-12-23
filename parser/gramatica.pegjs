@@ -58,8 +58,8 @@ expresiones  =  id:identificador {
                 / cor:corchetes isCase:"i"?{ //cors = chars
                     return new n.Corchetes(cor, isCase);
                 }
-                / "."
-                / "!."
+                / "." {return new n.Punto()}
+                / "!." {return new n.Fin()}
 
 // conteo = "|" parteconteo _ (_ delimitador )? _ "|"
 
@@ -107,7 +107,7 @@ escape = "'"
 
 secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
-numero = [0-9]+
+numero = num:([0-9]+) { return parseInt(num.join('')); } 
 
 identificador = id:([_a-z]i[_a-z0-9]i*) { return text(); }
 

@@ -7,6 +7,8 @@ const nodes = {
     Corchetes:['cor', 'isCase'],
     Rango:['bottom', 'top'],
     Identificador:['id'],
+    Punto : [],
+    Fin: [],
 };
 
 export default nodes;

@@ -97,3 +97,25 @@ export class Identificador extends Node {
     }
 }
     
+export class Punto extends Node {
+    constructor() {
+        super();
+        
+    }
+
+    accept(visitor) {
+        return visitor.visitPunto(this);
+    }
+}
+    
+export class Fin extends Node {
+    constructor() {
+        super();
+        
+    }
+
+    accept(visitor) {
+        return visitor.visitFin(this);
+    }
+}
+    

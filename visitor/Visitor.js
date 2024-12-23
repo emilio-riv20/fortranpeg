@@ -9,4 +9,6 @@ export default class visitor {
 	visitCorchetes(node) {}
 	visitRango(node) {}
 	visitIdentificador(node) {}
+	visitPunto(node) {}
+	visitFin(node) {}
 }

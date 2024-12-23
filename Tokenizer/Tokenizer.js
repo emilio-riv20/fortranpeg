@@ -135,19 +135,24 @@ end module tokenizer
     
         let result = '';
     
-        // Genera las condiciones para caracteres especiales
-        processedChars.forEach((char) => {
-            if (specialChars[char] !== undefined) {
-                const asciiValue = specialChars[char];
-                result += `
-    if (iachar(input(i:i)) == ${asciiValue}) then
-        lexeme = input(cursor:i)
+        // Genera las condiciones para caracteres especiales agrupados
+        const groupedSpecials = processedChars.filter((char) => specialChars[char] !== undefined);
+        if (groupedSpecials.length > 0) {
+            const specialConditions = groupedSpecials
+                .map((char) => `iachar(input(i:i)) == ${specialChars[char]}`)
+                .join(' .or. ');
+    
+            result += `
+    if (input(i:i) == ' ' .or. ${specialConditions}) then
+        if (input(i:i) == ' ') lexeme = lexeme // '_'
+        ${groupedSpecials
+            .map((char) => `if (iachar(input(i:i)) == ${specialChars[char]}) lexeme = lexeme // '${char}'`)
+            .join('\n        ')}
         cursor = i + 1
         return
     end if
-                `;
-            }
-        });
+            `;
+        }
     
         // Genera condiciones para caracteres normales
         const normalChars = processedChars.filter((char) => specialChars[char] === undefined);
@@ -163,7 +168,6 @@ end module tokenizer
     
         return result;
     }
-
     visitCorchetes(node) {
         return `
     i = cursor
@@ -186,6 +190,13 @@ end module tokenizer
     }
 
     visitIdentificador(node) {
+        return '';
+    }
+
+    visitPunto(node) {
+        return '';
+    }
+    visitFin(node) {
         return '';
     }
 
