@@ -111,9 +111,8 @@ end module tokenizer
             result += `
     if (input(i:i) == ' ' .or. ${specialConditions}) then
         if (input(i:i) == ' ') lexeme = lexeme // '_'
-        ${groupedSpecials
-            .map((char) => `if (iachar(input(i:i)) == ${specialChars[char]}) lexeme = lexeme // '${char}'`)
-            .join('\n        ')}
+        if (iachar(input(i:i)) == 9) lexeme = lexeme // '\\t'
+        if (iachar(input(i:i)) == 10) lexeme = lexeme // '\\n'
         cursor = i + 1
         return
     end if
@@ -134,6 +133,7 @@ end module tokenizer
     
         return result;
     }
+    
     visitCorchetes(node) {
         return `
     i = cursor
@@ -147,9 +147,14 @@ end module tokenizer
 
     visitRango(node) {
         return `
-    if (input(i:i) >= "${node.bottom}" .and. input(i:i) <= "${node.top}") then
-        lexeme = input(cursor:i)
-        cursor = i + 1
+    i = cursor
+    lexeme = ""
+    do while (i <= len(input) .and. input(i:i) >= "${node.bottom}" .and. input(i:i) <= "${node.top}" .and. input(i:i) /= " ")
+        lexeme = lexeme // input(i:i)
+        i = i + 1
+    end do
+    if (len(lexeme) > 0) then
+        cursor = i
         return
     end if
         `;
