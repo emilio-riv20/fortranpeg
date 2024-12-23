@@ -220,18 +220,18 @@ function CreateIf(niv,arr,act=1){
     let condicion
     let bloque
     if (act > niv) {
-        const indentacion = "    ".repeat(act - 1); 
-        return `${indentacion}    ! Acción final\n${indentacion}    return\n`;
+        const indentacion = "   ".repeat(act - 1); 
+        return `\n${indentacion}${indentacion}return\n`;
     }
     console.log(arr)
-    const indentacion = "    ".repeat(act);
+    const indentacion = "   ".repeat(act);
     let obj = arr.shift()
     if(obj.type == "string"){
         condicion = `("${obj.val}" == input(cursor:cursor + ${obj.val.length-1}))`; // Condición dinámic
-        bloque = `${indentacion}if (${condicion}) then\n`;
+        bloque = `${indentacion}if (${condicion}) then\n${indentacion}${indentacion}allocate(character(len=${obj.val.length})::lexeme) \n${indentacion}${indentacion}lexeme=input(cursor:cursor + ${obj.val.length-1})\n${indentacion}${indentacion}cursor=cursor+${obj.val.length}`;
     }else if(obj.type=="range"){
         condicion = `(input(i:i) >= "${obj.val[0]}" .and. input(i:i) <= "${obj.val[1]}")`; // Condición dinámic
-        bloque = `${indentacion}i = cursor\n${indentacion}if (${condicion}) then\nlexeme=input(cursor:i)\ncursor=i+1`;
+        bloque = `\n${indentacion}i = cursor\n${indentacion}if (${condicion}) then\n${indentacion}${indentacion}lexeme=input(cursor:i)\n${indentacion}${indentacion}cursor=i+${obj.val[1].length}\n`;
     }
     const cuerpoRecursivo = CreateIf(niv,arr,act + 1);
     const cierre = `${indentacion}end if\n`;
