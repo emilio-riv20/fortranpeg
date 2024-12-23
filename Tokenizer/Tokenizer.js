@@ -7,11 +7,22 @@ export default class Tokenizer extends Visitor {
         return `
 module tokenizer
 implicit none
-
+integer :: cursor
 contains
-function nextSym(input, cursor) result(lexeme)
+
+subroutine parse(input)
     character(len=*), intent(in) :: input
+    character(len=:), allocatable :: lexeme
+    cursor = 1
+    do while (lexeme /= "EOF" .and. lexeme /= "ERROR")
+        lexeme = nextSym(input, cursor)
+        print *, lexeme
+    end do
+end subroutine parse
+
+function nextSym(input, cursor) result(lexeme)
     integer, intent(inout) :: cursor
+    character(len=*), intent(in) :: input
     character(len=:), allocatable :: lexeme
     integer :: i
 
