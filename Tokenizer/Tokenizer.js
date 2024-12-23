@@ -56,53 +56,7 @@ end module tokenizer
     }
 
     visitExpresion(node) {
-        let result = '';
-    
-        if (node.qty.length === 0) {
-            result += node.expr.accept(this);
-        } else {
-            let exprResult = this.addTabulationToLines(node.expr.accept(this));
-    
-            switch (node.qty) {
-                case '?':
-                    result += `
-    if (cursor <= len(input)) then
-    i = cursor
-    ${node.expr.accept(this)}
-    if(lexeme /= "ERROR") then
-        cursor = i
-    end if
-    end if
-                    `;
-                    break;
-    
-                case '*':
-                    result += `
-    i = cursor
-    do while (cursor <= len(input))
-    ${exprResult}
-    cursor = cursor + 1
-    end do
-                    `;
-                    break;
-    
-                case '+':
-                    result += `
-    i = cursor
-    ${exprResult}
-    do while (cursor <= len(input))
-    ${exprResult}
-    cursor = cursor + 1
-    end do
-                    `;
-                    break;
-    
-                default:
-                    console.log("Error en la cantidad de repeticiones");
-            }
-        }
-    
-        return result;
+        return node.expr.accept(this);
     }
 
     visitString(node) {
@@ -157,8 +111,9 @@ end module tokenizer
             result += `
     if (input(i:i) == ' ' .or. ${specialConditions}) then
         if (input(i:i) == ' ') lexeme = lexeme // '_'
-        if (iachar(input(i:i)) == 9) lexeme = lexeme // '\\t'
-        if (iachar(input(i:i)) == 10) lexeme = lexeme // '\\n'
+        ${groupedSpecials
+            .map((char) => `if (iachar(input(i:i)) == ${specialChars[char]}) lexeme = lexeme // '${char}'`)
+            .join('\n        ')}
         cursor = i + 1
         return
     end if
