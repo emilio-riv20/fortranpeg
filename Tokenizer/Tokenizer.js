@@ -47,8 +47,32 @@ end module parser
     }
 
     visitOpciones(node) {
-        return node.expr.map((node) => node.accept(this)).join('\n');
+        let e = ""
+        let ex = []
+        node.expr.map((node) => {
+            
+            if (node.expr.length > 1 ){
+                node.expr.map((n) => {
+                    if(n.expr.constructor.name == "String"){
+                        ex.push({val:n.expr.val,type:"string"})
+                    } else if(n.expr.constructor.name == "Corchetes"){
+                        ex.push({val:[n.expr.cor[0].bottom,n.expr.cor[0].top],type:"range"})
+                    }
+                })              
+                // e += CreateIf(ex.length,ex)
+            } else {  
+                node.expr.map((node)=>{
+                    e += node.accept(this)
+                    e += "\n"
+                })              
+            }
+
+        }).join("\n")
+        e+=CreateIf(ex.length,ex)
+        console.log(`${e}`)
+        return e
     }
+
 
     visitUnion(node) {
         // return `if `
@@ -191,4 +215,27 @@ end module parser
             .map(line => `    ${line}`)  // Agrega 4 espacios (tabulación) al principio de cada línea
             .join('\n');  // Vuelve a juntar las líneas con saltos de línea
     }
+}
+function CreateIf(niv,arr,act=1){
+    let condicion
+    let bloque
+    if (act > niv) {
+        const indentacion = "    ".repeat(act - 1); 
+        return `${indentacion}    ! Acción final\n${indentacion}    return\n`;
+    }
+    console.log(arr)
+    const indentacion = "    ".repeat(act);
+    let obj = arr.shift()
+    if(obj.type == "string"){
+        condicion = `("${obj.val}" == input(cursor:cursor + ${obj.val.length-1}))`; // Condición dinámic
+        bloque = `${indentacion}if (${condicion}) then\n`;
+    }else if(obj.type=="range"){
+        condicion = `(input(i:i) >= "${obj.val[0]}" .and. input(i:i) <= "${obj.val[1]}")`; // Condición dinámic
+        bloque = `${indentacion}i = cursor\n${indentacion}if (${condicion}) then\nlexeme=input(cursor:i)\ncursor=i+1`;
+    }
+    const cuerpoRecursivo = CreateIf(niv,arr,act + 1);
+    const cierre = `${indentacion}end if\n`;
+
+    // arr.forEach((e)=>{console.log(e)})
+    return bloque + cuerpoRecursivo + cierre;
 }
