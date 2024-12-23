@@ -31,6 +31,7 @@ end module tokenizer
     }
 
     visitProducciones(node) {
+        console.log(node.id)
        return node.expr.accept(this);
     }
 
@@ -44,53 +45,7 @@ end module tokenizer
     }
 
     visitExpresion(node) {
-        let result = '';
-    
-        if (node.qty.length === 0) {
-            result += node.expr.accept(this);
-        } else {
-            let exprResult = this.addTabulationToLines(node.expr.accept(this));
-    
-            switch (node.qty) {
-                case '?':
-                    result += `
-    if (cursor <= len(input)) then
-    i = cursor
-    ${node.expr.accept(this)}
-    if(lexeme /= "ERROR") then
-        cursor = i
-    end if
-    end if
-                    `;
-                    break;
-    
-                case '*':
-                    result += `
-    i = cursor
-    do while (cursor <= len(input))
-    ${exprResult}
-    cursor = cursor + 1
-    end do
-                    `;
-                    break;
-    
-                case '+':
-                    result += `
-    i = cursor
-    ${exprResult}
-    do while (cursor <= len(input))
-    ${exprResult}
-    cursor = cursor + 1
-    end do
-                    `;
-                    break;
-    
-                default:
-                    console.log("Error en la cantidad de repeticiones");
-            }
-        }
-    
-        return result;
+        return node.expr.accept(this);
     }
 
     visitString(node) {
@@ -194,10 +149,22 @@ end module tokenizer
     }
 
     visitPunto(node) {
-        return '';
+        return `
+    if (input(i:i) == '.') then
+        lexeme = '.'
+        cursor = i + 1
+        return
+    end if
+        `;
     }
     visitFin(node) {
-        return '';
+        return `
+    if (input(i:i) == '.') then
+        lexeme = 'EOF'
+        cursor = i + 1
+        return
+    end if
+        `;
     }
 
     // Función para agregar tabulación a cada línea
